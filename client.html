@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+</head>
+<body>
+    <div id="chat"></div>
+    <input type="text" id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8080/ws");
+
+        socket.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            displayMessage(message);
+        };
+
+        function sendMessage() {
+            const message = document.getElementById("message").value;
+            if (message.trim() !== "") {
+                socket.send(JSON.stringify({ username: "User", message: message }));
+                document.getElementById("message").value = "";
+            }
+        }
+
+        function displayMessage(message) {
+            const chatDiv = document.getElementById("chat");
+            const messageDiv = document.createElement("div");
+            messageDiv.innerHTML = `<strong>${message.username}:</strong> ${message.message}`;
+            chatDiv.appendChild(messageDiv);
+        }
+    </script>
+</body>
+</html>
